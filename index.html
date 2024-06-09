@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Survey</title>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<style>
+    body {
+        font-family: Helvetica, Arial, sans-serif;
+        background-color: #f9f9f9;
+        color: #333;
+        line-height: 1.6;
+        padding: 20px;
+    }
+    .tab {
+        display: none; /* Hide tabs initially */
+    }
+    .visible {
+        display: block; /* Only the active tab is visible */
+    }
+    #tabContainer {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* This centers the child elements horizontally */
+        width: 100%; /* Ensures the container takes full width */
+    }
+    .item {
+        display: flex; /* This will align the image and text side by side */
+        align-items: center; /* This will vertically align items in the middle */
+        justify-content: center; /* Aligns items to the start of the 'item' container */
+        margin-bottom: 20px;
+        max-width: 100%;
+        padding: 40px;
+    }
+    img {
+        width: auto; /* Auto width for responsive size */
+        max-height: 80vh;
+        max-width: 25vw;
+        border: 1px solid #ccc;
+        /* object-fit: cover; Ensures images cover the area well without distortion */
+    }
+    .text-content {
+        display: flex; /* This will align the image and text side by side */
+        align-items: center; /* This will vertically align items in the middle */
+        justify-content: center; /* Aligns items to the start of the 'item' container */
+        padding: 40px;
+        margin: 20px; /* Space between image and text */
+        width: 30vw;
+        height: 60vh;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        border-radius: 8px;
+    }
+    input[type="radio"], textarea, button {
+        margin-right: 5px;
+        margin-top: 20px;
+    }
+    label {
+        margin-right: 10px;
+        font-size: 16px;
+    }
+    .text-field-container {
+        text-align: center;
+    }
+    textarea {
+        width: 80%; /* Adequate width for writing a paragraph */
+        height: 100px; /* Enough height to write multiple lines */
+        margin: 20px auto; /* Center align the textarea */
+        display: block; /* Ensures that textarea takes its own line */
+    }
+    .controls {
+        text-align: center; /* Center-aligns buttons */
+        padding: 10px;
+    }
+    button {
+        font-size: 16px;
+        padding: 10px;
+        margin: 10px; /* Space between buttons */
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #45a049;
+    }
+    .selected {
+        background-color: #e7f4e4; /* Subtle light green background for selected text blocks */
+    }
+    .header-container {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+</style>
+<script src="pinterest_data.js"></script>
+</head>
+<body>
+    <form action="https://formspree.io/f/xyyrojnd" method="POST">
+        <div id="tabContainer"></div>
+    </form>
+    <script>        
+
+        function shuffleTupleArray(array) {
+            // Create a copy of the array to avoid mutating the original array
+            const shuffledArray = array.slice();
+            
+            for (let i = shuffledArray.length - 1; i > 0; i--) {
+                // Generate a random index between 0 and i
+                const j = Math.floor(Math.random() * (i + 1));
+                
+                // Swap elements at i and j
+                [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+            }
+            
+            return shuffledArray;
+        }
+
+        const tuples = [
+            ["llava", "cogvlm"], ["cogvlm", "llava"],
+            ["llava", "deepseek"], ["deepseek", "llava"],
+            ["cogvlm", "deepseek"], ["deepseek", "cogvlm"]
+        ];
+
+        const tabTitles = ["Composition", "Contrast", "Movement", "Rhythm", "Proportion", "Focus Point"];
+        const tabQuestions = {
+                0: "Judge which <strong>text</strong> you find describes the <strong>composition</strong> of the painting the best. Click to select the most fitting description.",
+                1: "Judge which <strong>text</strong> you find that bests describes the use of <strong>contrast</strong> in the painting. Click to select the most fitting description.",
+                2: "Judge which <strong>text</strong> you find that bests describes the depiction of <strong>movement</strong> in the painting. Click to select the most fitting description.",
+                3: "Judge which <strong>text</strong> you find best describing the depiction of <strong>rhythm</strong> in the painting. Click to select the most fitting description.",
+                4: "Judge which <strong>text</strong> you find best describing the use of <strong>proportion</strong> in the painting. Click to select the most fitting description.",
+                5: "Judge which <strong>text</strong> you find best describing the <strong>focus point</strong> of the painting. Click to select the most fitting description.",
+            };
+        const tabData = {
+            0: "composition",
+            1: "contrast_elements",
+            2: "movement",
+            3: "rhythm",
+            4: "proportion",
+            5: "focus_point",
+        };
+
+        function truncateText(text, maxChars) {
+            if (text.length <= maxChars) {
+                return text;
+            }
+
+            let truncated = text.substring(0, maxChars);
+
+            // Ensure we don't cut off in the middle of a sentence
+            const lastPeriodIndex = truncated.lastIndexOf('.');
+            const lastExclamationIndex = truncated.lastIndexOf('!');
+            const lastQuestionIndex = truncated.lastIndexOf('?');
+
+            const lastSentenceEnd = Math.max(lastPeriodIndex, lastExclamationIndex, lastQuestionIndex);
+
+            if (lastSentenceEnd > -1) {
+                truncated = truncated.substring(0, lastSentenceEnd + 1);
+            } else {
+                truncated = truncated.substring(0, truncated.lastIndexOf(' '));
+            }
+
+            return truncated.trim();
+        }
+
+        function createTabContent(tabIndex, items, last) {
+            let tabContent = `<div class="tab" id="tab${tabIndex}">`;
+            tabContent += `<div class="header-container"><h2>${tabTitles[tabIndex]}</h2><p>${tabQuestions[tabIndex]}</p></div>`;
+            
+            const shuffledTuples = shuffleTupleArray(tuples);
+
+            items.forEach((item, index) => {
+                const [firstComposition, secondComposition] = shuffledTuples[index % shuffledTuples.length];
+                
+                // Access the descriptions from the nested objects
+                const text_one = truncateText(pinterest_data[item][`${firstComposition}_answers`][tabData[tabIndex]], 1300);
+                const text_two = truncateText(pinterest_data[item][`${secondComposition}_answers`][tabData[tabIndex]], 1300);
+
+                tabContent += `
+                    <div class="item">
+                        <input type="hidden" name="${tabData[tabIndex]}_${item}" value="">
+                        <div class="text-content" data-index="${firstComposition}" onclick="toggleSelection(event)">
+                            <span>${text_one}</span><br>
+                        </div>
+                        <img src="images/${item}" alt="${item}">
+                        <div class="text-content" data-index="${secondComposition}" onclick="toggleSelection(event)">
+                            <span>${text_two}</span><br>
+                        </div>
+                    </div>
+                `;
+            });
+
+            tabContent += `<div class="text-field-container">`;
+            tabContent += `<p>Please give your overal opinion on the quality of the text:</p>`;
+            tabContent += `<textarea name="feedback_${tabData[tabIndex]}" placeholder="Enter your feedback"></textarea>`;
+            tabContent += `</div>`;
+            tabContent += `<div class="controls">`;
+            if (tabIndex > 0) {
+                tabContent += `<button type="button" onclick="changeTab(${tabIndex}, -1)">Previous</button>`;
+            }
+            if (!last) {
+                tabContent += `<button type="button" onclick="changeTab(${tabIndex}, 1)">Next</button>`;
+            } else {
+                tabContent += `<button type="submit">Submit</button>`;
+            }
+            tabContent += `</div></div>`;
+            return tabContent;
+        }
+        
+        function toggleSelection(event) {
+            const textContent = event.currentTarget;
+            const allTextContents = textContent.parentNode.querySelectorAll('.text-content');
+            const allInvisibleInputs = textContent.parentNode.querySelectorAll('input[type="hidden"]');
+
+            // Check and deselect any other selected text-content in the same item
+            allTextContents.forEach(block => {
+                if (block !== textContent) {
+                    block.classList.remove('selected');
+                }
+            });
+
+            // Check and deselect any other selected text-content in the same item
+            allInvisibleInputs.forEach(input => {
+                input.value = "";
+            });
+
+            // Toggle the selected class on the clicked text-content
+            textContent.classList.add('selected');
+
+            // Toggle the checked attribute on the clicked input
+            const input = textContent.parentNode.querySelector('input[type="hidden"]');
+            input.value = textContent.getAttribute('data-index');
+
+            // Scroll logic: move to the next item
+            let parentItem = textContent.closest('.item');
+            let nextItem = parentItem.nextElementSibling;
+            if (nextItem && nextItem.classList.contains('item')) {
+                scrollToItem(nextItem);
+            } else {
+                scrollToBottom();
+            }
+        }
+
+        function scrollToItem(item) {
+            const yOffset = -window.innerHeight / 2 + item.clientHeight / 2; // Calculate offset to center the item
+            const yPosition = item.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: yPosition, behavior: 'smooth' });
+        }
+
+        function scrollToBottom() {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        document.querySelectorAll('.text-content').forEach(element => {
+            element.addEventListener('click', toggleSelection);
+        });
+
+
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                // Generate a random index from 0 to i
+                const j = Math.floor(Math.random() * (i + 1));
+                // Swap elements at indices i and j
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function displayTabs() {
+            const container = document.getElementById("tabContainer");
+            const imageKeys = Object.keys(pinterest_data);
+            shuffleArray(imageKeys); // Shuffle the image keys instead of the data itself
+            for (let i = 0; i < 3; i++) { // Assuming 3 tabs based on the new data
+                container.innerHTML += createTabContent(i, imageKeys.slice(i * 6, (i + 1) * 6), i === 5);
+            }
+            changeTab(0, 0);
+            attachScrollToNextItem();
+        }
+
+        // function displayTabs() {
+        //     const container = document.getElementById("tabContainer");
+        //     shuffleArray(imageData);
+        //     for (let i = 0; i < 6; i++) {
+        //         container.innerHTML += createTabContent(i, imageData.slice(i * 6, (i + 1) * 6), i === 5);
+        //     }
+        //     changeTab(0, 0); // Display the first tab
+        //     attachScrollToNextItem();
+        // }
+        
+        function attachScrollToNextItem() {
+            const radioButtons = document.querySelectorAll('input[type="radio"]');
+            radioButtons.forEach(button => {
+                button.addEventListener('change', function() {
+                    let parentItem = this.closest('.item');
+                    let nextItem = parentItem.nextElementSibling;
+                    if (nextItem && nextItem.classList.contains('item')) {
+                        scrollToItem(nextItem);
+                    } else {
+                        scrollToBottom();
+                    }
+                });
+            });
+        }
+
+        function scrollToItem(item) {
+            const yOffset = -window.innerHeight / 2 + item.clientHeight / 2; // Calculate offset to center the item
+            const yPosition = item.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            
+            window.scrollTo({ top: yPosition, behavior: 'smooth' });
+        }
+
+        function scrollToBottom() {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function changeTab(current, move) {
+            document.getElementById("tab" + current).classList.remove("visible");
+            document.getElementById("tab" + (current + move)).classList.add("visible");
+            window.scrollTo(0, 0); // Scrolls to the top of the page
+        }
+
+        window.onload = displayTabs;
+    </script>
+</body>
+</html>
