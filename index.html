@@ -92,6 +92,10 @@
         text-align: center;
         margin-bottom: 20px;
     }
+    .highlighted {
+        background-color: #ffb7b7;
+        cursor: pointer;
+    }
 
 </style>
 <script src="pinterest_data.js"></script>
@@ -123,7 +127,23 @@
             ["cogvlm", "deepseek"], ["deepseek", "cogvlm"]
         ];
 
-        const tabTitles = ["Composition", "Contrast", "Movement", "Rhythm", "Proportion", "Focus Point"];
+        
+        function shuffleModelsArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        const models = [
+            "llava", "llava",
+            "deepseek", "deepseek",
+            "cogvlm", "cogvlm",
+        ];
+
+        const tabTitles = ["Composition", "Contrast", "Movement", "Rhythm", "Proportion", "Focus Point", "Composition", "Contrast", "Movement", "Rhythm", "Proportion", "Focus Point"];
+        const tabSubtitles = ["Judge which description fits best", "Highlight non fitting parts in the text"]
         const tabQuestions = {
                 0: "Judge which <strong>text</strong> you find describes the <strong>composition</strong> of the painting the best. Click to select the most fitting description.",
                 1: "Judge which <strong>text</strong> you find that bests describes the use of <strong>contrast</strong> in the painting. Click to select the most fitting description.",
@@ -131,6 +151,13 @@
                 3: "Judge which <strong>text</strong> you find best describing the depiction of <strong>rhythm</strong> in the painting. Click to select the most fitting description.",
                 4: "Judge which <strong>text</strong> you find best describing the use of <strong>proportion</strong> in the painting. Click to select the most fitting description.",
                 5: "Judge which <strong>text</strong> you find best describing the <strong>focus point</strong> of the painting. Click to select the most fitting description.",
+                6: "Judge the quality of the <strong>text</strong> on <strong>composition</strong> of these paintings. Do this by highlighting parts of the texts that you think are not fitting or could be improved.",
+                7: "Judge the quality of the <strong>text</strong> about how <strong>contrast</strong> is used of these paintings. Do this by highlighting parts of the texts that you think are not fitting or could be improved.",
+                8: "Judge the quality of the <strong>text</strong> on <strong>movement</strong> visualized in the paintings. Do this by highlighting parts of the texts that you think are not fitting or could be improved.",
+                9: "Judge the quality of the <strong>text</strong> on <strong>rhythm</strong> shown in the painting. Do this by highlighting parts of the texts that you think are not fitting or could be improved.",
+                10: "Judge the quality of the <strong>text</strong> on use of difference in <strong>proportion</strong>. Do this by highlighting parts of the texts that you think are not fitting or could be improved.",
+                11: "Judge the quality of the <strong>text</strong> on the <strong>focus point</strong> of the paintings. Do this by highlighting parts of the texts that you think are not fitting or could be improved.",
+            
             };
         const tabData = {
             0: "composition",
@@ -139,6 +166,12 @@
             3: "rhythm",
             4: "proportion",
             5: "focus_point",
+            6: "composition",
+            7: "contrast_elements",
+            8: "movement",
+            9: "rhythm",
+            10: "proportion",
+            11: "focus_point",
         };
 
         function truncateText(text, maxChars) {
@@ -164,32 +197,50 @@
             return truncated.trim();
         }
 
-        function createTabContent(tabIndex, items, last) {
+        function createTabContent(tabIndex, items, two_options, last) {
             let tabContent = `<div class="tab" id="tab${tabIndex}">`;
-            tabContent += `<div class="header-container"><h2>${tabTitles[tabIndex]}</h2><p>${tabQuestions[tabIndex]}</p></div>`;
+            tabContent += `<div class="header-container"><h2>${tabTitles[tabIndex]}</h2><h3>${tabSubtitles[two_options?0:1]}</h3><p>${tabQuestions[tabIndex]}</p></div>`;
             
-            const shuffledTuples = shuffleTupleArray(tuples);
+            if (two_options) {
+                const shuffledTuples = shuffleTupleArray(tuples);
 
-            items.forEach((item, index) => {
-                const [firstComposition, secondComposition] = shuffledTuples[index % shuffledTuples.length];
-                
-                // Access the descriptions from the nested objects
-                const text_one = truncateText(pinterest_data[item][`${firstComposition}_answers`][tabData[tabIndex]], 1300);
-                const text_two = truncateText(pinterest_data[item][`${secondComposition}_answers`][tabData[tabIndex]], 1300);
+                items.forEach((item, index) => {
+                    const [firstComposition, secondComposition] = shuffledTuples[index % shuffledTuples.length];
+                    
+                    // Access the descriptions from the nested objects
+                    const text_one = truncateText(pinterest_data[item][`${firstComposition}_answers`][tabData[tabIndex]], 1300);
+                    const text_two = truncateText(pinterest_data[item][`${secondComposition}_answers`][tabData[tabIndex]], 1300);
 
-                tabContent += `
-                    <div class="item">
-                        <input type="hidden" name="${tabData[tabIndex]}_${item}" value="">
-                        <div class="text-content" data-index="${firstComposition}" onclick="toggleSelection(event)">
-                            <span>${text_one}</span><br>
+                    tabContent += `
+                        <div class="item">
+                            <input type="hidden" name="${tabData[tabIndex]}_${item}" value="">
+                            <div class="text-content two-option-text-content" data-index="${firstComposition}" onclick="toggleSelection(event)">
+                                <span>${text_one}</span><br>
+                            </div>
+                            <img src="images/${item}" alt="${item}">
+                            <div class="text-content two-option-text-content" data-index="${secondComposition}" onclick="toggleSelection(event)">
+                                <span>${text_two}</span><br>
+                            </div>
                         </div>
-                        <img src="images/${item}" alt="${item}">
-                        <div class="text-content" data-index="${secondComposition}" onclick="toggleSelection(event)">
-                            <span>${text_two}</span><br>
+                    `;
+                });
+            } else {
+                const shuffleModels = shuffleModelsArray(models);
+
+                items.forEach((item, index) => {
+                    model = shuffleModels[index];
+                    const text = truncateText(pinterest_data[item][`${model}_answers`][tabData[tabIndex]], 1300);
+                    tabContent += `
+                        <div class="item">
+                            <img src="images/${item}" alt="${item}">
+                            <div class="text-content highlight-text-content" id="${tabData[tabIndex]}_${item}">
+                                <span>${text}</span>
+                            </div>
+                            <input type="hidden" class="input-highlights" id="highlights_${tabData[tabIndex]}_${item}" name="highlights_${tabData[tabIndex]}_${item}">
                         </div>
-                    </div>
-                `;
-            });
+                    `;
+                });
+            }
 
             tabContent += `<div class="text-field-container">`;
             tabContent += `<p>Please give your overal opinion on the quality of the text:</p>`;
@@ -210,7 +261,7 @@
         
         function toggleSelection(event) {
             const textContent = event.currentTarget;
-            const allTextContents = textContent.parentNode.querySelectorAll('.text-content');
+            const allTextContents = textContent.parentNode.querySelectorAll('.two-option-text-content');
             const allInvisibleInputs = textContent.parentNode.querySelectorAll('input[type="hidden"]');
 
             // Check and deselect any other selected text-content in the same item
@@ -252,7 +303,7 @@
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         }
 
-        document.querySelectorAll('.text-content').forEach(element => {
+        document.querySelectorAll('.two-option-text-content').forEach(element => {
             element.addEventListener('click', toggleSelection);
         });
 
@@ -271,22 +322,60 @@
             const container = document.getElementById("tabContainer");
             const imageKeys = Object.keys(pinterest_data);
             shuffleArray(imageKeys); // Shuffle the image keys instead of the data itself
-            for (let i = 0; i < 3; i++) { // Assuming 3 tabs based on the new data
-                container.innerHTML += createTabContent(i, imageKeys.slice(i * 6, (i + 1) * 6), i === 5);
+            for (let i = 0; i < 6; i++) { // Assuming 3 tabs based on the new data
+                container.innerHTML += createTabContent(i, imageKeys.slice(i * 6, (i + 1) * 6), 1, 0);
+            }
+            for (let i = 6; i < 12; i++) { // Assuming 3 tabs based on the new data
+                container.innerHTML += createTabContent(i, imageKeys.slice((i-6) * 6, ((i-6) + 1) * 6), 0, i === 11);
             }
             changeTab(0, 0);
             attachScrollToNextItem();
+            addHighlightListeners();
         }
 
-        // function displayTabs() {
-        //     const container = document.getElementById("tabContainer");
-        //     shuffleArray(imageData);
-        //     for (let i = 0; i < 6; i++) {
-        //         container.innerHTML += createTabContent(i, imageData.slice(i * 6, (i + 1) * 6), i === 5);
-        //     }
-        //     changeTab(0, 0); // Display the first tab
-        //     attachScrollToNextItem();
-        // }
+        // When DOM loaded
+        function addHighlightListeners() {
+            // Get all "highlighted" elements
+            const highlightedElements = document.querySelectorAll('.highlight-text-content');
+            console.log(highlightedElements);
+
+            // Loop through each element
+            highlightedElements.forEach(function(element) {
+
+                element.highlights = [];
+                
+                element.addEventListener('mouseup', function(e) {
+                    const selection = window.getSelection();
+                    if (!selection.isCollapsed && selection.toString().trim() !== '') {
+                        const range = selection.getRangeAt(0);
+                        const selectionContents = range.extractContents();
+                        const span = document.createElement('span');
+                        span.classList.add('highlighted');
+                        span.appendChild(selectionContents);
+                        range.insertNode(span);
+
+                        span.onclick = function() {
+                            // Find the index of the clicked highlight in the array
+                            const index = element.highlights.indexOf(span.textContent);
+                            if (index > -1) {
+                                element.highlights.splice(index, 1); // Remove the highlight from the array
+                            }
+
+                            // Replace the span with its text content
+                            const textNode = document.createTextNode(span.textContent);
+                            span.parentNode.replaceChild(textNode, span);
+
+                            // Update the hidden input
+                            document.getElementById(`highlights_${element.id}`).value = element.highlights.join(' | ');
+                        };
+
+                        element.highlights.push(span.textContent);
+                        document.getElementById(`highlights_${element.id}`).value = element.highlights.join(' | ');  // Join highlighted texts with a separator
+                    }
+                    selection.removeAllRanges(); // Clear selection
+                });
+            });
+        }
         
         function attachScrollToNextItem() {
             const radioButtons = document.querySelectorAll('input[type="radio"]');
