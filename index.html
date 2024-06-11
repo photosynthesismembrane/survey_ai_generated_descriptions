@@ -416,10 +416,10 @@
             const imageKeys = Object.keys(pinterest_data);
             shuffleArray(imageKeys);
             for (let i = 1; i < 7; i++) {
-                container.innerHTML += createTabContent(i, imageKeys.slice((i - 1) * 6, i * 6), true);
+                container.innerHTML += createTabContent(i, imageKeys.slice((i - 1) * 3, i * 3), true);
             }
             for (let i = 7; i < 13; i++) {
-                container.innerHTML += createTabContent(i, imageKeys.slice((i - 7) * 6, (i - 6) * 6), false);
+                container.innerHTML += createTabContent(i, imageKeys.slice((i - 7) * 3, (i - 6) * 3), false);
             }
             container.innerHTML += createOutroTab(13);
             changeTab(0, 0);
