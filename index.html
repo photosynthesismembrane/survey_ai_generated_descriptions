@@ -127,6 +127,43 @@
         background-color: #ffb7b7;
         cursor: pointer;
     }
+    /* Modal styles */
+    .modal {
+        display: none; 
+        position: fixed; 
+        z-index: 1; 
+        left: 0;
+        top: 0;
+        width: 100%; 
+        height: 100%; 
+        overflow: auto; 
+        background-color: rgb(0,0,0); 
+        background-color: rgba(0,0,0,0.4); 
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto; 
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%; 
+        max-width: 600px;
+        text-align: center;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
 
 </style>
 <script src="pinterest_data.js"></script>
@@ -234,7 +271,7 @@
                         </div>
                         <div class="form-group">
                             <label for="year">What year are you in?</label>
-                            <input type="number" id="year" name="year" required>
+                            <input type="text" id="year" name="year" required>
                         </div>
                         <div class="form-group">
                             <label for="bank_account">Bank Account:</label>
@@ -251,6 +288,7 @@
                 </div>
             `;
         }
+
 
         function createOutroTab(tabIndex) {
             return `
@@ -395,9 +433,56 @@
         }
 
         function changeTab(current, move) {
+            // Validation logic for the first tab
+            if (current === 0 && move === 1) {
+                const requiredFields = document.querySelectorAll('#tab0 input[required]');
+                for (let field of requiredFields) {
+                    if (!field.value) {
+                        showModal('Please fill in all required fields.');
+                        return; // Prevent tab change if any required field is empty
+                    }
+                }
+            }
+
+            // Change tab visibility
             document.getElementById("tab" + current).classList.remove("visible");
             document.getElementById("tab" + (current + move)).classList.add("visible");
             window.scrollTo(0, 0);
+        }
+
+        function showModal(message) {
+            const modal = document.getElementById("myModal");
+            const modalMessage = document.getElementById("modalMessage");
+            const span = document.getElementsByClassName("close")[0];
+
+            modalMessage.innerText = message;
+            modal.style.display = "block";
+
+            span.onclick = function() {
+                modal.style.display = "none";
+            }
+
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+        }
+
+        window.onload = function() {
+            displayTabs();
+            const modal = document.getElementById("myModal");
+            const span = document.getElementsByClassName("close")[0];
+
+            span.onclick = function() {
+                modal.style.display = "none";
+            }
+
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
         }
 
         
@@ -429,5 +514,12 @@
 
         window.onload = displayTabs;
     </script>
+    <!-- Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p id="modalMessage"></p>
+        </div>
+    </div>
 </body>
 </html>
