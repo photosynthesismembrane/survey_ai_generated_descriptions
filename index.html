@@ -92,7 +92,7 @@
         font-size: 16px;
     }
     .text-field-container {
-        text-align: center;
+        text-align: left;
     }
     textarea {
         width: 80%; /* Adequate width for writing a paragraph */
@@ -115,6 +115,16 @@
     }
     button:hover {
         background-color: #45a049;
+    }
+    /* Submit button is bigger and red */
+    button.button-red {
+        background-color: #f44336;
+        padding: 15px;
+        font-size: 20px;
+    }
+    /* Hover on submit it get's darker */
+    button.button-red:hover {
+        background-color: #d32f2f;
     }
     .selected {
         background-color: #e7f4e4; /* Subtle light green background for selected text blocks */
@@ -280,10 +290,12 @@
                     </div>
                     <div class="text-field-container">
                         <h3>Survey Description</h3>
-                        <p>This survey is designed to evaluate different text descriptions of paintings. You will be asked to judge which text best describes various aspects of the paintings, such as composition, contrast, movement, rhythm, proportion, and focus point. In some tabs, you will also be asked to highlight parts of the text that you think are not fitting or could be improved.</p>
+                        <p>Thank you for participating in this survey. We will send you 10 euro's when you carefully give us your opinion on the subjects.</p>
+                        <p>We used several ai vision language models to describe the composition of paintings. We use data like this later to train an ai art generator. We are interested in your opinion on the quality of the text descriptions.</p>
+                        <p>The first half you are asked to select which of the two descriptions fits best. The second half you are asked to highlight parts of the text that you think are not fitting or could be improved. Each tab shows descriptions on a specific topic.</p>
                     </div>
                     <div class="controls">
-                        <button type="button" onclick="changeTab(0, 1)">Next</button>
+                        <button type="button" class="button-red" onclick="changeTab(0, 1)">Start</button>
                     </div>
                 </div>
             `;
@@ -299,7 +311,7 @@
                     </div>
                     <div class="controls">
                         <button type="button" onclick="changeTab(${tabIndex}, -1)">Previous</button>
-                        <button type="submit">Submit</button>
+                        <button type="submit" class="button-red">Submit</button>
                     </div>
                 </div>
             `;
