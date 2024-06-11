@@ -252,17 +252,30 @@
             `;
         }
 
+        function createOutroTab(number) {
+            return `
+                <div class="tab" id="tab${number}">
+                    <div class="header-container">
+                        <h2>We appreciate your insights. Thank you for sharing your thoughts with us.</h2>
+                        <p>You will receive 10 euro's within 2 weeks after you pressed submit.</p>
+                    </div>
+                    <div class="controls">
+                        <button type="button" onclick="changeTab(${tabIndex}, -1)">Previous</button>
+                        <button type="submit">Submit</button>
+                    </div>
+                </div>
+            `;
+        }
 
-
-        function createTabContent(tabIndex, items, two_options, last) {
+        function createTabContent(tabIndex, items, two_options) {
             let tabContent = `<div class="tab" id="tab${tabIndex}">`;
             tabContent += `<div class="header-container"><h2>${tabTitles[tabIndex]}</h2><h3>${tabSubtitles[two_options ? 1 : 2]}</h3><p>${tabQuestions[tabIndex]}</p></div>`;
             if (two_options) {
                 const shuffledTuples = shuffleTupleArray(tuples);
                 items.forEach((item, index) => {
                     const [firstComposition, secondComposition] = shuffledTuples[index % shuffledTuples.length];
-                    const text_one = truncateText(pinterest_data[item][`${firstComposition}_answers`][tabData[tabIndex]], 1300);
-                    const text_two = truncateText(pinterest_data[item][`${secondComposition}_answers`][tabData[tabIndex]], 1300);
+                    const text_one = truncateText(pinterest_data[item][`${firstComposition}_answers`][tabData[tabIndex]], 1000);
+                    const text_two = truncateText(pinterest_data[item][`${secondComposition}_answers`][tabData[tabIndex]], 1000);
                     tabContent += `
                         <div class="item">
                             <input type="hidden" name="${tabData[tabIndex]}_${item}" value="">
@@ -280,7 +293,7 @@
                 const shuffledModels = shuffleModelsArray(models);
                 items.forEach((item, index) => {
                     const model = shuffledModels[index];
-                    const text = truncateText(pinterest_data[item][`${model}_answers`][tabData[tabIndex]], 1300);
+                    const text = truncateText(pinterest_data[item][`${model}_answers`][tabData[tabIndex]], 1000);
                     tabContent += `
                         <div class="item">
                             <img src="images/${item}" alt="${item}">
@@ -292,16 +305,13 @@
                     `;
                 });
             }
-            tabContent += `<div class="controls">`;
-            if (tabIndex > 0) {
-                tabContent += `<button type="button" onclick="changeTab(${tabIndex}, -1)">Previous</button>`;
-            }
-            if (!last) {
-                tabContent += `<button type="button" onclick="changeTab(${tabIndex}, 1)">Next</button>`;
-            } else {
-                tabContent += `<button type="submit">Submit</button>`;
-            }
-            tabContent += `</div></div>`;
+            tabContent += `
+                <div class="controls">
+                    <button type="button" onclick="changeTab(${tabIndex}, -1)">Previous</button>
+                    <button type="button" onclick="changeTab(${tabIndex}, 1)">Next</button>
+                </div>                
+            `;
+            tabContent += `</div>`;
             return tabContent;
         }
 
@@ -406,11 +416,12 @@
             const imageKeys = Object.keys(pinterest_data);
             shuffleArray(imageKeys);
             for (let i = 1; i < 7; i++) {
-                container.innerHTML += createTabContent(i, imageKeys.slice((i - 1) * 6, i * 6), true, false);
+                container.innerHTML += createTabContent(i, imageKeys.slice((i - 1) * 6, i * 6), true);
             }
             for (let i = 7; i < 13; i++) {
-                container.innerHTML += createTabContent(i, imageKeys.slice((i - 7) * 6, (i - 6) * 6), false, i === 12);
+                container.innerHTML += createTabContent(i, imageKeys.slice((i - 7) * 6, (i - 6) * 6), false);
             }
+            container.innerHTML += createOutroTab(13);
             changeTab(0, 0);
             attachScrollToNextItem();
             addHighlightListeners();
