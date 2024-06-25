@@ -72,7 +72,6 @@
         padding: 8px;
         font-size: 16px;
     }
-
     .item {
         display: flex; /* This will align the image and text side by side */
         align-items: center; /* This will vertically align items in the middle */
@@ -80,6 +79,15 @@
         margin-bottom: 20px;
         max-width: 100%;
         padding: 40px;
+    }
+    .item.mobile {
+        flex-direction: column; /* Stack image and text on top of each other */
+        .text-content-container-mobile {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+        }
     }
     img {
         width: auto; /* Auto width for responsive size */
@@ -558,7 +566,7 @@
                     const text_two = truncateText(image_data[item][`${secondComposition}_answers`][tabInfoItem.data], 1000);
                     if (mobile === 'non-mobile') {
                         tabContent += `
-                            <div class="item">
+                            <div class="item ${mobile}">
                                 <input type="hidden" name="${tabInfoItem.data}_${item}" value="">
                                 <div class="text-content ${mobile} two-option-text-content" data-index="${firstComposition}" onclick="toggleSelection(event)">
                                     <span>${text_one}</span><br>
@@ -571,14 +579,16 @@
                         `;
                     } else {
                         tabContent += `
-                            <div class="item">
+                            <div class="item ${mobile}">
                                 <input type="hidden" name="${tabInfoItem.data}_${item}" value="">
                                 <img src="${image_folder}/${item}" class="${mobile}" alt="${item}">
-                                <div class="text-content ${mobile} two-option-text-content" data-index="${firstComposition}" onclick="toggleSelection(event)">
-                                    <span>${text_one}</span><br>
-                                </div>
-                                <div class="text-content ${mobile} two-option-text-content" data-index="${secondComposition}" onclick="toggleSelection(event)">
-                                    <span>${text_two}</span><br>
+                                <div class="text-content-container-mobile">
+                                    <div class="text-content ${mobile} two-option-text-content" data-index="${firstComposition}" onclick="toggleSelection(event)">
+                                        <span>${text_one}</span><br>
+                                    </div>
+                                    <div class="text-content ${mobile} two-option-text-content" data-index="${secondComposition}" onclick="toggleSelection(event)">
+                                        <span>${text_two}</span><br>
+                                    </div>
                                 </div>
                             </div>
                         `;
