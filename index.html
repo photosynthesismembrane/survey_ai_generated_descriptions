@@ -89,6 +89,9 @@
             justify-content: center;
         }
     }
+    .item.mobile.odd {
+        background-color: #f9f9f9;
+    }
     img {
         width: auto; /* Auto width for responsive size */
         max-height: 80vh;
@@ -578,8 +581,9 @@
                             </div>
                         `;
                     } else {
+                        odd_even = index % 2 === 0 ? 'even' : 'odd';
                         tabContent += `
-                            <div class="item ${mobile}">
+                            <div class="item ${mobile} ${odd_even}">
                                 <input type="hidden" name="${tabInfoItem.data}_${item}" value="">
                                 <img src="${image_folder}/${item}" class="${mobile}" alt="${item}">
                                 <div class="text-content-container-mobile">
