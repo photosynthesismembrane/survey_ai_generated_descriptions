@@ -236,6 +236,12 @@
             margin-bottom: 40px;
             width: 20vw;
         }
+        .dropdown-container.mobile {
+            width: 60vw;
+            select {
+                font-size: 24;
+            }
+        }
         select {
             width: 200px;
             padding: 10px;
@@ -265,6 +271,15 @@
                 width: 50px;
                 height: 50px;
                 border: 1px solid #ccc;
+            }
+        }
+        .small-image-container.mobile {
+            label {
+                width: 200px;
+            }
+            img {
+                width: 100px;
+                height: 100px;
             }
         }
         .dataset-container {
@@ -445,12 +460,13 @@
             let img_keys = Object.keys(img_data);
             shuffleArray(img_keys);
             let img_html = '';
+            mobile = window.mobileAndTabletCheck() ? 'mobile' : 'non-mobile';
             for (let i = 0; i < 6; i++) {
                 let img_key = img_keys[i];
                 let img_text = img_data[img_key];
-                img_html += `<img class="small" src="${img_folder}/${img_key}" alt="${img_key}">`;
+                img_html += `<img class="small ${mobile}" src="${img_folder}/${img_key}" alt="${img_key}">`;
             }
-            return `<div class="small-image-container">
+            return `<div class="small-image-container ${mobile}">
                         <label>${label}</label>
                         ${img_html}
                     </div>`;
@@ -491,7 +507,7 @@
                         <p>I gathered two sets of artworks from the web. There is one set of paintings from the renaissance which I selected from the WikiArt dataset. There is another set of illustrations that I gathered from Pinterest. You can choice for which set you want to do the survey:</p>
                     </div>
                     <div class="dataset-container">
-                        <div class="dropdown-container">
+                        <div class="dropdown-container ${mobile}">
                             <select id="data-source" onchange="changeDataSource()">
                                 <option value="renaissance">Renaissance</option>
                                 <option value="pinterest">Pinterest</option>
