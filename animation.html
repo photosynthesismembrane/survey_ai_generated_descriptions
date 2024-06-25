@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moving Rectangles</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #000;
+    }
+
+    #container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      perspective: 1000px;
+    }
+
+    .rectangle {
+      position: absolute;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      border-radius: 5px;
+      border: 1px solid #000;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <script>
+    const container = document.getElementById('container');
+    const numRectangles = 550; // Number of rectangles
+    const largeImage = new Image();
+    largeImage.src = 'chloroplast.png';
+    
+    largeImage.onload = () => {
+      for (let i = 0; i < numRectangles; i++) {
+        createRectangle(i);
+      }
+      animateRectangles();
+    };
+
+    function createRectangle(index) {
+      const rect = document.createElement('div');
+      rect.classList.add('rectangle');
+      
+      const width = getRandomInt(20, 30);
+      const height = getRandomInt(20, 30);
+      const left = getRandomInt(0, window.innerWidth - width);
+      const top = getRandomInt(0, window.innerHeight - height);
+      const z = getRandomInt(-100, 100);
+      const angle = (index / numRectangles) * 2 * Math.PI;
+      
+      const bgX = getRandomInt(0, largeImage.width - width);
+      const bgY = getRandomInt(0, largeImage.height - height);
+      
+      rect.style.width = `${width}px`;
+      rect.style.height = `${height}px`;
+      rect.style.left = `${left}px`;
+      rect.style.top = `${top}px`;
+      rect.style.transform = `translateZ(${z}px)`;
+      rect.style.backgroundImage = `url('chloroplast.png')`;
+      rect.style.backgroundPosition = `-${bgX}px -${bgY}px`;
+
+      rect.angle = angle;
+      rect.radius = getRandomInt(500, 700);
+      rect.speed = getRandomFloat(.2, .3);
+      
+      container.appendChild(rect);
+    }
+    
+    function animateRectangles() {
+      const rectangles = document.querySelectorAll('.rectangle');
+      
+      function update() {
+        rectangles.forEach(rect => {
+          rect.angle += 0.01 * rect.speed;
+          const left = (window.innerWidth / 2) + rect.radius * Math.cos(rect.angle) - (rect.clientWidth / 2);
+          const top = (window.innerHeight / 2) + rect.radius * Math.sin(rect.angle) - (rect.clientHeight / 2);
+          
+          rect.style.left = `${left}px`;
+          rect.style.top = `${top}px`;
+        });
+        
+        requestAnimationFrame(update);
+      }
+      
+      update();
+    }
+
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    
+    function getRandomFloat(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+  </script>
+</body>
+</html>
