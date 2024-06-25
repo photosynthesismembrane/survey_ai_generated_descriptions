@@ -114,6 +114,12 @@
         max-width: 100%; /* Full width for mobile */
         max-height: 60vh; /* Half height for mobile */
     }
+    img.highlight-image.mobile {
+        width: 45vw;
+    }
+    .highlight-text-content.mobile {
+        width: 45vw;
+    }
     .text-content {
         display: flex; /* This will align the image and text side by side */
         align-items: center; /* This will vertically align items in the middle */
@@ -621,8 +627,8 @@
                     const text = truncateText(image_data[item][`${model}_answers`][tabInfoItem.data], 1000);
                     tabContent += `
                         <div class="item">
-                            <img src="${image_folder}/${item}" alt="${item}">
-                            <div class="text-content  ${mobile} highlight-text-content" id="${model}_${tabInfoItem.data}_${item}">
+                            <img src="${image_folder}/${item}" class="highlight-image ${mobile}" alt="${item}">
+                            <div class="text-content ${mobile} highlight-text-content" id="${model}_${tabInfoItem.data}_${item}">
                                 <span>${text}</span>
                             </div>
                             <input type="hidden" class="input-highlights" id="highlights_${model}_${tabInfoItem.data}_${item}" name="highlights_${model}_${tabInfoItem.data}_${item}">
