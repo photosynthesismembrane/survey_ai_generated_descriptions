@@ -109,10 +109,10 @@
         max-height: 60vh; /* Half height for mobile */
     }
     img.highlight-image.mobile {
-        width: 45vw;
+        width: 40vw;
     }
     .highlight-text-content.mobile {
-        width: 45vw;
+        width: 40vw;
     }
     .text-content {
         display: flex; /* This will align the image and text side by side */
@@ -129,7 +129,7 @@
     }
     .text-content.mobile {
         height: 35vh; /* Full height for mobile */
-        width: 45vw; /* Full width for mobile */
+        width: 40vw; /* Full width for mobile */
         margin: 10px; /* Space between image and text */
     }
     input[type="radio"], textarea, button {
@@ -506,13 +506,13 @@
                     <div class="header-container">
                         <h2>Welcome to the Survey</h2>
                     </div>
-                    <div class="text-field-container">
+                    <div class="text-field-container ${mobile}">
                         <p>Thank you for participating. I'm Tom Eijkelenkamp and I study Computing Science: Intelligent Systems and Visual Computing at the University of Groningen. I have a fascination for any kind of art form and so for my thesis I study AI art. The research is based around composition of generated art.</p>
                         <p>I used several ai vision language models to describe the composition of paintings. Data as such I use to train an ai art generator for further research. I'm interested in your opinion on the quality of the descriptions.</p>
                         <p>One part of the survey you are asked to select which of the two descriptions fits best. Another part is that you are asked to highlight parts of the text that you think are not fitting or could be improved. Each tab shows descriptions on a specific topic.</p>
                         <p>You receive 10 euros for participating. When there are more then 50 participants, we will randomly select 50 participants to receive 10 euros. The survey takes about 20 minutes to complete. Filling in the personal details is not mandatory. Please leave your email and we will contact you to send you the money.</p>
                     </div>
-                    <div class="text-field-container">
+                    <div class="text-field-container ${mobile}">
                         <h3>Please fill in your personal information:</h3>
                         <div class="form-group">
                             <label for="name">Name:</label>
@@ -530,7 +530,7 @@
                         <input type="hidden" id="country" name="country">
                     </div>
                     <br/>
-                    <div class="text-field-container">
+                    <div class="text-field-container ${mobile}">
                         <p>I gathered two sets of artworks from the web. There is one set of paintings from the renaissance which I selected from the WikiArt dataset. There is another set of illustrations that I gathered from Pinterest. You can choice for which set you want to do the survey:</p>
                     </div>
                     <div class="dataset-container">
@@ -544,7 +544,7 @@
                         + showRandomImageSelection('Pinterest:', pinterest_data, 'images') +
                         `
                     </div>
-                    <div class="text-field-container">
+                    <div class="text-field-container ${mobile}">
                         <p>By joining the survey you give consent to the use of your input in an ananyomous manner for this scientific study. You have the right to withdraw from the study at any time, even after completion of the survey.</p>
                         <p>If you have questions or remarks send an email to: t.eijkelenkamp@student.rug.nl</p>
                     </div>
