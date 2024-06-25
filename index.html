@@ -15,7 +15,7 @@
     .tab {
         display: none; /* Hide tabs initially */
     }
-    #tab0.mobile {
+    .tab.mobile {
         width: 100%; /* Full width for mobile */
     }
     .visible {
@@ -92,6 +92,7 @@
     }
     .text-content.mobile {
         height: 40vh; /* Full height for mobile */
+        width: 25vw; /* Full width for mobile */
     }
     input[type="radio"], textarea, button {
         margin-right: 5px;
@@ -465,7 +466,7 @@
                             <input type="email" id="email" name="email">
                         </div>
                         <div class="form-group">
-                            <label for="art_education">Describe in short your education and experience in art:</label>
+                            <label for="art_education">Describe in short your experience in art:</label>
                             <input type="text" id="art_education" name="art_education">
                         </div>
                         <input type="hidden" id="ip-address" name="ip">
@@ -499,8 +500,9 @@
 
 
         function createOutroTab(tabIndex) {
+            mobile = window.mobileAndTabletCheck() ? 'mobile' : 'non-mobile';
             return `
-                <div class="tab" id="tab${tabIndex}">
+                <div class="tab ${mobile}" id="tab${tabIndex}">
                     <div class="header-container">
                         <h2>We appreciate your insights. Thank you for sharing your thoughts with us.</h2>
                         <p>Click submit to finish the survey!</p>
@@ -515,8 +517,8 @@
 
         function createTabContent(tabIndex, items, two_options) {
             let tabInfoItem = tabInfo[Math.ceil(tabIndex / 2)]; 
-            let tabContent = `<div class="tab" id="tab${tabIndex}">`;
             let mobile = window.mobileAndTabletCheck() ? 'mobile' : 'non-mobile';
+            let tabContent = `<div class="tab ${mobile}" id="tab${tabIndex}">`;
             tabContent += `<div class="header-container"><h2>(${tabIndex}/4) ${tabInfoItem.title}</h2><h3>${tabInfoItem.subtitle[two_options ? 0 : 1]}</h3><p>${tabInfoItem.questions[two_options ? 0 : 1]}</p></div>`;
             if (two_options) {
                 const shuffledTuples = shuffleTupleArray(tuples);
