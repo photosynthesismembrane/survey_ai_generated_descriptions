@@ -15,6 +15,9 @@
     .tab {
         display: none; /* Hide tabs initially */
     }
+    #tab0.mobile {
+        width: 100%; /* Full width for mobile */
+    }
     .visible {
         display: block; /* Only the active tab is visible */
     }
@@ -83,6 +86,9 @@
         box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
         border-radius: 8px;
     }
+    .text-content.mobile {
+        height: 40vh; /* Full height for mobile */
+    }
     input[type="radio"], textarea, button {
         margin-right: 5px;
         margin-top: 20px;
@@ -116,6 +122,11 @@
     button:hover {
         background-color: #45a049;
     } 
+    button.mobile {
+        font-size: 32px; /* Increase font size */
+        padding: 20px; /* Increase padding for better touch target */
+        margin: 20px; /* Space between buttons */
+    }
     /* Important Button */
     button.important {
         font-size: 18px;
@@ -130,6 +141,12 @@
     }
     button.important:hover {
         background-color: #4CAF50;
+    }
+    button.mobile.important {
+        font-size: 36px;
+        padding: 24px;
+        margin: 20px; /* Space between buttons */
+        box-shadow: 0 48x 16px rgba(0, 0, 0, 0.2);
     }
     .selected {
         background-color: #e7f4e4; /* Subtle light green background for selected text blocks */
@@ -421,8 +438,9 @@
         }
 
         function createIntroTab() {
+            mobile = window.mobileAndTabletCheck() ? 'mobile' : 'non-mobile';
             return `
-                <div class="tab visible" id="tab0">
+                <div class="tab visible ${mobile}" id="tab0">
                     <div class="header-container">
                         <h2>Welcome to the Survey</h2>
                     </div>
@@ -469,7 +487,7 @@
                         <p>If you have questions or remarks send an email to: t.eijkelenkamp@student.rug.nl</p>
                     </div>
                     <div class="controls">
-                        <button type="button" class="important" onclick="changeTab(0, 1)">Start</button>
+                        <button type="button" class="important ${mobile}" onclick="changeTab(0, 1)">Start</button>
                     </div>
                 </div>
             `;
@@ -484,8 +502,8 @@
                         <p>Click submit to finish the survey!</p>
                     </div>
                     <div class="controls">
-                        <button type="button" onclick="changeTab(${tabIndex}, -1)">Previous</button>
-                        <button type="submit" class="important">Submit</button>
+                        <button type="button" class="${mobile}" onclick="changeTab(${tabIndex}, -1)">Previous</button>
+                        <button type="submit" class="important ${mobile}">Submit</button>
                     </div>
                 </div>
             `;
@@ -494,6 +512,7 @@
         function createTabContent(tabIndex, items, two_options) {
             let tabInfoItem = tabInfo[Math.ceil(tabIndex / 2)]; 
             let tabContent = `<div class="tab" id="tab${tabIndex}">`;
+            let mobile = window.mobileAndTabletCheck() ? 'mobile' : 'non-mobile';
             tabContent += `<div class="header-container"><h2>(${tabIndex}/4) ${tabInfoItem.title}</h2><h3>${tabInfoItem.subtitle[two_options ? 0 : 1]}</h3><p>${tabInfoItem.questions[two_options ? 0 : 1]}</p></div>`;
             if (two_options) {
                 const shuffledTuples = shuffleTupleArray(tuples);
@@ -504,11 +523,11 @@
                     tabContent += `
                         <div class="item">
                             <input type="hidden" name="${tabInfoItem.data}_${item}" value="">
-                            <div class="text-content two-option-text-content" data-index="${firstComposition}" onclick="toggleSelection(event)">
+                            <div class="text-content ${mobile} two-option-text-content" data-index="${firstComposition}" onclick="toggleSelection(event)">
                                 <span>${text_one}</span><br>
                             </div>
                             <img src="${image_folder}/${item}" alt="${item}">
-                            <div class="text-content two-option-text-content" data-index="${secondComposition}" onclick="toggleSelection(event)">
+                            <div class="text-content ${mobile} two-option-text-content" data-index="${secondComposition}" onclick="toggleSelection(event)">
                                 <span>${text_two}</span><br>
                             </div>
                         </div>
@@ -522,7 +541,7 @@
                     tabContent += `
                         <div class="item">
                             <img src="${image_folder}/${item}" alt="${item}">
-                            <div class="text-content highlight-text-content" id="${model}_${tabInfoItem.data}_${item}">
+                            <div class="text-content  ${mobile} highlight-text-content" id="${model}_${tabInfoItem.data}_${item}">
                                 <span>${text}</span>
                             </div>
                             <input type="hidden" class="input-highlights" id="highlights_${model}_${tabInfoItem.data}_${item}" name="highlights_${model}_${tabInfoItem.data}_${item}">
@@ -532,8 +551,8 @@
             }
             tabContent += `
                 <div class="controls">
-                    <button type="button" onclick="changeTab(${tabIndex}, -1)">Previous</button>
-                    <button type="button" onclick="changeTab(${tabIndex}, 1)">Next</button>
+                    <button type="button" class="${mobile}" onclick="changeTab(${tabIndex}, -1)">Previous</button>
+                    <button type="button" class="${mobile}" onclick="changeTab(${tabIndex}, 1)">Next</button>
                 </div>                
             `;
             tabContent += `<input type="hidden" id="time_spent_tab${tabIndex}" name="time_spent_tab${tabIndex}" value="">`;
@@ -564,7 +583,7 @@
                 scrollToBottom();
             }
         }
-        
+
         function addHighlightListeners() {
             const highlightedElements = document.querySelectorAll('.highlight-text-content');
 
