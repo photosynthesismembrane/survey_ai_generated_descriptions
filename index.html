@@ -238,6 +238,11 @@
             justify-content: center;
             align-items: center;
         }
+        .word {
+            cursor: pointer;
+            display: inline; /* Ensure the spans display inline */
+            white-space: pre-wrap; /* Preserve whitespace for wrapping */
+        }
 </style>
 <script src="renaissance_data.js"></script>
 <script src="pinterest_data.js"></script>
@@ -567,15 +572,21 @@
                 element.highlights = [];
                 
                 element.addEventListener('mouseup', function() {
-                    const selection = window.getSelection();
+                    let selection = null;
+                    if (window.getSelection) {
+                        selection = window.getSelection();
+                    } else if (document.selection && document.selection.type !== "Control") {
+                        selection = document.selection.createRange();
+                    }
                     
-                    if (!selection.isCollapsed && selection.toString().trim() !== '') {
+                    if (selection && !selection.isCollapsed && selection.toString().trim() !== '') {
                         const range = selection.getRangeAt(0);
                         const selectionContents = range.extractContents();
                         const span = document.createElement('span');
                         span.classList.add('highlighted');
                         span.appendChild(selectionContents);
                         
+                        // range.deleteContents();
                         range.insertNode(span);
                         
                         span.addEventListener('click', function() {
@@ -584,9 +595,9 @@
                         
                         element.highlights.push(span.textContent);
                         updateHighlightsInput(element);
+                        
+                        selection.removeAllRanges();
                     }
-                    
-                    selection.removeAllRanges();
                 });
             });
         }
@@ -601,52 +612,12 @@
             updateHighlightsInput(element);
         }
 
-        function addSentenceHighlightListeners() {
-            const highlightedElements = document.querySelectorAll('.highlight-text-content');
-            
-            highlightedElements.forEach(function(element) {
-                element.highlights = [];
-
-                // Wrap each sentence in a span
-                const sentences = element.textContent.match(/[^.!?]*[.!?]/g);
-                if (sentences) {
-                    element.innerHTML = sentences.map(sentence => `<span class="sentence">${sentence.trim()}</span>`).join(' ');
-                }
-                
-                const sentenceElements = element.querySelectorAll('.sentence');
-                
-                sentenceElements.forEach(function(sentenceElement) {
-                    sentenceElement.addEventListener('click', function() {
-                        toggleHighlight(sentenceElement, element);
-                    });
-                });
-            });
-        }
-
-        function toggleHighlight(sentenceElement, element) {
-            const text = sentenceElement.textContent;
-            if (sentenceElement.classList.contains('highlighted')) {
-                // Remove highlight
-                sentenceElement.classList.remove('highlighted');
-                const index = element.highlights.indexOf(text);
-                if (index > -1) {
-                    element.highlights.splice(index, 1);
-                }
-            } else {
-                // Add highlight
-                sentenceElement.classList.add('highlighted');
-                element.highlights.push(text);
-            }
-            updateHighlightsInput(element);
-        }
-
         function updateHighlightsInput(element) {
             const highlightsInput = document.getElementById(`highlights_${element.id}`);
             if (highlightsInput) {
                 highlightsInput.value = element.highlights.join(' | ');
             }
         }
-
 
         function attachScrollToNextItem() {
             const radioButtons = document.querySelectorAll('input[type="radio"]');
@@ -798,15 +769,9 @@
         }
 
         window.onload = function() {
-            if (!window.mobileAndTabletCheck()) {
-                displayTabs();
-                addHighlightListeners();
-                getClientInfo();
-            } else {
-                displayTabs();
-                addSentenceHighlightListeners();
-                getClientInfo();
-            }
+            displayTabs();
+            addHighlightListeners();
+            getClientInfo();
         }
 
         function displayTabs(initially = true) {
