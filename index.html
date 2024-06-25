@@ -87,6 +87,10 @@
         max-width: 25vw;
         border: 1px solid #ccc;
     }
+    img.mobile {
+        max-width: 100%; /* Full width for mobile */
+        max-height: 40vh; /* Half height for mobile */
+    }
     .text-content {
         display: flex; /* This will align the image and text side by side */
         align-items: center; /* This will vertically align items in the middle */
@@ -102,7 +106,7 @@
     }
     .text-content.mobile {
         height: 40vh; /* Full height for mobile */
-        width: 100%; /* Full width for mobile */
+        width: 40vw; /* Full width for mobile */
     }
     input[type="radio"], textarea, button {
         margin-right: 5px;
@@ -536,18 +540,33 @@
                     const [firstComposition, secondComposition] = shuffledTuples[index % shuffledTuples.length];
                     const text_one = truncateText(image_data[item][`${firstComposition}_answers`][tabInfoItem.data], 1000);
                     const text_two = truncateText(image_data[item][`${secondComposition}_answers`][tabInfoItem.data], 1000);
-                    tabContent += `
-                        <div class="item">
-                            <input type="hidden" name="${tabInfoItem.data}_${item}" value="">
-                            <div class="text-content ${mobile} two-option-text-content" data-index="${firstComposition}" onclick="toggleSelection(event)">
-                                <span>${text_one}</span><br>
+                    if (mobile === 'non-mobile') {
+                        tabContent += `
+                            <div class="item">
+                                <input type="hidden" name="${tabInfoItem.data}_${item}" value="">
+                                <div class="text-content ${mobile} two-option-text-content" data-index="${firstComposition}" onclick="toggleSelection(event)">
+                                    <span>${text_one}</span><br>
+                                </div>
+                                <img src="${image_folder}/${item}" class="${mobile}" alt="${item}">
+                                <div class="text-content ${mobile} two-option-text-content" data-index="${secondComposition}" onclick="toggleSelection(event)">
+                                    <span>${text_two}</span><br>
+                                </div>
                             </div>
-                            <img src="${image_folder}/${item}" alt="${item}">
-                            <div class="text-content ${mobile} two-option-text-content" data-index="${secondComposition}" onclick="toggleSelection(event)">
-                                <span>${text_two}</span><br>
+                        `;
+                    } else {
+                        tabContent += `
+                            <div class="item">
+                                <input type="hidden" name="${tabInfoItem.data}_${item}" value="">
+                                <img src="${image_folder}/${item}" class="${mobile}" alt="${item}">
+                                <div class="text-content ${mobile} two-option-text-content" data-index="${firstComposition}" onclick="toggleSelection(event)">
+                                    <span>${text_one}</span><br>
+                                </div>
+                                <div class="text-content ${mobile} two-option-text-content" data-index="${secondComposition}" onclick="toggleSelection(event)">
+                                    <span>${text_two}</span><br>
+                                </div>
                             </div>
-                        </div>
-                    `;
+                        `;
+
                 });
             } else {
                 const shuffledModels = shuffleModelsArray(models);
