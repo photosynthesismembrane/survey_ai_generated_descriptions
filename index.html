@@ -564,42 +564,52 @@
                 scrollToBottom();
             }
         }
-
+        
         function addHighlightListeners() {
             const highlightedElements = document.querySelectorAll('.highlight-text-content');
 
             highlightedElements.forEach(function(element) {
                 element.highlights = [];
-                
+
+                // Mouse events for desktop
                 element.addEventListener('mouseup', function() {
-                    let selection = null;
-                    if (window.getSelection) {
-                        selection = window.getSelection();
-                    } else if (document.selection && document.selection.type !== "Control") {
-                        selection = document.selection.createRange();
-                    }
-                    
-                    if (selection && !selection.isCollapsed && selection.toString().trim() !== '') {
-                        const range = selection.getRangeAt(0);
-                        const selectionContents = range.extractContents();
-                        const span = document.createElement('span');
-                        span.classList.add('highlighted');
-                        span.appendChild(selectionContents);
-                        
-                        // range.deleteContents();
-                        range.insertNode(span);
-                        
-                        span.addEventListener('click', function() {
-                            removeHighlight(span, element);
-                        });
-                        
-                        element.highlights.push(span.textContent);
-                        updateHighlightsInput(element);
-                        
-                        selection.removeAllRanges();
-                    }
+                    handleTextSelection(element);
+                });
+
+                // Touch events for mobile
+                element.addEventListener('touchend', function() {
+                    handleTextSelection(element);
                 });
             });
+        }
+
+        function handleTextSelection(element) {
+            let selection = null;
+            if (window.getSelection) {
+                selection = window.getSelection();
+            } else if (document.selection && document.selection.type !== "Control") {
+                selection = document.selection.createRange();
+            }
+
+            if (selection && !selection.isCollapsed && selection.toString().trim() !== '') {
+                const range = selection.getRangeAt(0);
+                const selectionContents = range.extractContents();
+                const span = document.createElement('span');
+                span.classList.add('highlighted');
+                span.appendChild(selectionContents);
+
+                range.deleteContents();
+                range.insertNode(span);
+
+                span.addEventListener('click', function() {
+                    removeHighlight(span, element);
+                });
+
+                element.highlights.push(span.textContent);
+                updateHighlightsInput(element);
+
+                selection.removeAllRanges();
+            }
         }
 
         function removeHighlight(span, element) {
