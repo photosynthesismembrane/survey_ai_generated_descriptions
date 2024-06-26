@@ -22,6 +22,11 @@
     .tab {
         display: none; /* Hide tabs initially */
     }
+    .outro-tab {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
     .tab.mobile {
         width: 100%; /* Full width for mobile */
         /* Increase font size for better readability on mobile */
@@ -573,7 +578,7 @@
         function createOutroTab(tabIndex) {
             mobile = window.mobileAndTabletCheck() ? 'mobile' : 'non-mobile';
             return `
-                <div class="tab ${mobile}" id="tab${tabIndex}">
+                <div class="tab ${mobile} outro-tab" id="tab${tabIndex}">
                     <div class="header-container">
                         <h2>We appreciate your insights. Thank you for sharing your thoughts with us.</h2>
                         <h3>Click submit to finish the survey!</h3>
