@@ -134,6 +134,7 @@
         height: 35vh; /* Full height for mobile */
         width: 40vw; /* Full width for mobile */
         margin: 10px; /* Space between image and text */
+        font-size: 24px;
     }
     input[type="radio"], textarea, button {
         margin-right: 5px;
@@ -580,7 +581,8 @@
         function createTabContent(tabIndex, items, two_options) {
             let tabInfoItem = tabInfo[Math.ceil(tabIndex / 2)]; 
             let mobile = window.mobileAndTabletCheck() ? 'mobile' : 'non-mobile';
-            let tabContent = `<div class="tab ${mobile}" id="tab${tabIndex}">`;
+            let tabTask = two_options ? 'two-options-tab' : 'highlight-tab';
+            let tabContent = `<div class="tab ${mobile} ${tabTask}" id="tab${tabIndex}">`;
             tabContent += `<div class="header-container"><h2>(${tabIndex}/4) ${tabInfoItem.title}</h2><h3>${tabInfoItem.subtitle[two_options ? 0 : 1]}</h3><p>${tabInfoItem.questions[two_options ? 0 : 1]}</p></div>`;
             if (two_options) {
                 const shuffledTuples = shuffleTupleArray(tuples);
@@ -678,17 +680,21 @@
 
                 // Mouse events for desktop
                 element.addEventListener('mouseup', function() {
-                    handleTextSelection(element);
-                });
-
-                // Touch events for mobile
-                document.addEventListener('touchend', function() {
-                    handleTextSelection(element);
+                    handleTextSelection();
                 });
             });
+
+            const highlightTabs = document.querySelectorAll('.highlight-tab');
+            highlightTabs.forEach(function(tab) {
+                // Touch events for mobile
+                tab.addEventListener('touchend', function() {
+                    handleTextSelection();
+                });
+            });
+
         }
 
-        function handleTextSelection(element) {
+        function handleTextSelection() {
             let selection = null;
             if (window.getSelection) {
                 selection = window.getSelection();
@@ -706,12 +712,18 @@
                 range.deleteContents();
                 range.insertNode(span);
 
+                const commonAncestor = range.commonAncestorContainer;
+                // Check if the common ancestor is a text node
+                const element = commonAncestor.nodeType === Node.TEXT_NODE ? commonAncestor.parentElement : commonAncestor;
+                const elementDiv = element.closest('.highlight-text-content');
+
+
                 span.addEventListener('click', function() {
-                    removeHighlight(span, element);
+                    removeHighlight(span, elementDiv);
                 });
 
-                element.highlights.push(span.textContent);
-                updateHighlightsInput(element);
+                elementDiv.highlights.push(span.textContent);
+                updateHighlightsInput(elementDiv);
 
                 selection.removeAllRanges();
             }
