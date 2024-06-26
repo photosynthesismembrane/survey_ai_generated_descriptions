@@ -598,7 +598,8 @@
             let mobile = window.mobileAndTabletCheck() ? 'mobile' : 'non-mobile';
             let tabTask = two_options ? 'two-options-tab' : 'highlight-tab';
             let tabContent = `<div class="tab ${mobile} ${tabTask}" id="tab${tabIndex}">`;
-            tabContent += `<div class="header-container"><h2>(${tabIndex}/4) ${tabInfoItem.title}</h2><h3>${tabInfoItem.subtitle[two_options ? 0 : 1]}</h3><p>${tabInfoItem.questions[two_options ? 0 : 1]}</p></div>`;
+            let mobile_highlight_message = !two_options && mobile==='mobile'  ? `` : `Zooming in makes it easier to highlight the text.`;
+            tabContent += `<div class="header-container"><h2>(${tabIndex}/4) ${tabInfoItem.title}</h2><h3>${tabInfoItem.subtitle[two_options ? 0 : 1]}</h3><p>${tabInfoItem.questions[two_options ? 0 : 1]}${mobile_highlight_message}</p></div>`;
             if (two_options) {
                 const shuffledTuples = shuffleTupleArray(tuples);
                 items.forEach((item, index) => {
