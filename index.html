@@ -632,7 +632,7 @@
                     const text = truncateText(image_data[item][`${model}_answers`][tabInfoItem.data], 1000);
                     odd_even = index % 2 === 0 ? 'even' : 'odd';
                     tabContent += `
-                        <div class="item ${tabTask} ${odd_even}">
+                        <div class="item ${tabTask} ${mobile} ${odd_even}">
                             <img src="${image_folder}/${item}" class="highlight-image ${mobile}" alt="${item}">
                             <div class="text-content ${mobile} highlight-text-content" id="${model}_${tabInfoItem.data}_${item}">
                                 <span>${text}</span>
