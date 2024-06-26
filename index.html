@@ -22,10 +22,11 @@
     .tab {
         display: none; /* Hide tabs initially */
     }
-    .outro-tab {
+    .outro-tab-container {
         display: flex;
         flex-direction: column;
         align-items: center;
+        height: 80vh;
     }
     .tab.mobile {
         width: 100%; /* Full width for mobile */
@@ -578,14 +579,16 @@
         function createOutroTab(tabIndex) {
             mobile = window.mobileAndTabletCheck() ? 'mobile' : 'non-mobile';
             return `
-                <div class="tab ${mobile} outro-tab" id="tab${tabIndex}">
-                    <div class="header-container">
-                        <h2>We appreciate your insights. Thank you for sharing your thoughts with us.</h2>
-                        <h3>Click submit to finish the survey!</h3>
-                    </div>
-                    <div class="controls">
-                        <button type="button" class="${mobile}" onclick="changeTab(${tabIndex}, -1)">Previous</button>
-                        <button type="submit" class="important ${mobile}">Submit</button>
+                <div class="tab ${mobile}" id="tab${tabIndex}">
+                    <div class="outro-tab-container">
+                        <div class="header-container">
+                            <h2>We appreciate your insights. Thank you for sharing your thoughts with us.</h2>
+                            <h3>Click submit to finish the survey!</h3>
+                        </div>
+                        <div class="controls">
+                            <button type="button" class="${mobile}" onclick="changeTab(${tabIndex}, -1)">Previous</button>
+                            <button type="submit" class="important ${mobile}">Submit</button>
+                        </div>
                     </div>
                 </div>
             `;
