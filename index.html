@@ -113,10 +113,12 @@
         margin-top: 40px;
     }
     img.highlight-image.mobile {
-        width: 40vw;
+        max-width: 80vw;
+        max-height: 40vh;
     }
     .highlight-text-content.mobile {
-        width: 40vw;
+        width: 80vw;
+        height: 40vh;
     }
     .text-content {
         display: flex; /* This will align the image and text side by side */
@@ -594,7 +596,7 @@
                     const text_two = truncateText(image_data[item][`${secondComposition}_answers`][tabInfoItem.data], 1000);
                     if (mobile === 'non-mobile') {
                         tabContent += `
-                            <div class="item ${mobile}">
+                            <div class="item ${mobile} ${tabTask}">
                                 <input type="hidden" name="${tabInfoItem.data}_${item}" value="">
                                 <div class="text-content ${mobile} two-option-text-content" data-index="${firstComposition}" onclick="toggleSelection(event)">
                                     <span>${text_one}</span><br>
@@ -608,7 +610,7 @@
                     } else {
                         odd_even = index % 2 === 0 ? 'even' : 'odd';
                         tabContent += `
-                            <div class="item ${mobile} ${odd_even}">
+                            <div class="item ${mobile} ${odd_even} ${tabTask}">
                                 <input type="hidden" name="${tabInfoItem.data}_${item}" value="">
                                 <img src="${image_folder}/${item}" class="${mobile}" alt="${item}">
                                 <div class="text-content-container-mobile">
@@ -628,8 +630,9 @@
                 items.forEach((item, index) => {
                     const model = shuffledModels[index];
                     const text = truncateText(image_data[item][`${model}_answers`][tabInfoItem.data], 1000);
+                    odd_even = index % 2 === 0 ? 'even' : 'odd';
                     tabContent += `
-                        <div class="item">
+                        <div class="item ${tabTask} ${odd_even}">
                             <img src="${image_folder}/${item}" class="highlight-image ${mobile}" alt="${item}">
                             <div class="text-content ${mobile} highlight-text-content" id="${model}_${tabInfoItem.data}_${item}">
                                 <span>${text}</span>
